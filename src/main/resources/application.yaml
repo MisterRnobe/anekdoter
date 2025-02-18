@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: anekdoter
+  threads:
+    virtual:
+      enabled: true
+  flyway:
+    locations: classpath:migrations
