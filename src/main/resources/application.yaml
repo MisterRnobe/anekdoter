@@ -6,3 +6,16 @@ spring:
       enabled: true
   flyway:
     locations: classpath:migrations
+
+logging:
+  level:
+    org.zalando.logbook.Logbook: TRACE
+
+anekdoter:
+  client:
+    deepseek:
+      base-url: https://api.deepseek.com
+      authorization: Bearer 1234
+    chatgpt:
+      base-url: https://api.deepseek.com
+      authorization: Bearer 1234

@@ -1,5 +1,6 @@
 package ru.nmedvedev.anekdoter.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import ru.nmedvedev.anekdoter.model.Rate
@@ -7,6 +8,8 @@ import ru.nmedvedev.anekdoter.repository.AnecdoteRepository
 import ru.nmedvedev.anekdoter.repository.RateRepository
 import java.util.UUID
 import ru.nmedvedev.anekdoter.model.Anecdote as AnecdoteDb
+
+private val log = KotlinLogging.logger {}
 
 @Component
 class AnecdoteService(
@@ -18,7 +21,9 @@ class AnecdoteService(
         val anecdote = anecdoteRepository.findOneUnrated(sessionId) ?: anecdoteRepository.save(
             AnecdoteDb(id = UUID.randomUUID(), text = anecdoteGenerator.generate())
         )
-        return Anecdote(anecdote.id!!, anecdote.text!!)
+        return Anecdote(anecdote.id!!, anecdote.text!!).also {
+            log.info { "Suggested anecdote: $it" }
+        }
     }
 
     @Transactional
@@ -32,7 +37,6 @@ class AnecdoteService(
             )
         )
     }
-
 }
 
 data class Anecdote(
