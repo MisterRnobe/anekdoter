@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anekdoter</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body.light-theme {
+            background-color: #fff;
+            color: #000;
+        }
+
+        body.dark-theme {
+            background-color: #121212;
+            color: #fff;
+        }
+
+        .anecdote-container {
+            border: 2px solid #007bff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            max-width: 600px;
+            min-height: 150px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .rating-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Анекдоты дня</h1>
+    <div class="anecdote-container">
+        <div id="loading" class="alert alert-info w-100 text-center" style="display:none;">Загружаю анекдот...</div>
+        <div id="anecdote"></div>
+    </div>
+    <div id="ratingButtons" class="rating-buttons">
+        <button class="btn btn-outline-primary">😠</button>
+        <button class="btn btn-outline-primary">😐</button>
+        <button class="btn btn-outline-primary">😊</button>
+        <button class="btn btn-outline-primary">😄</button>
+        <button class="btn btn-outline-primary">😂</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
