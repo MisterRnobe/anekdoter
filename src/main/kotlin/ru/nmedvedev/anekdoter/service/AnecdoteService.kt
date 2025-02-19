@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional
 import ru.nmedvedev.anekdoter.model.Rate
 import ru.nmedvedev.anekdoter.repository.AnecdoteRepository
 import ru.nmedvedev.anekdoter.repository.RateRepository
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.UUID
 import ru.nmedvedev.anekdoter.model.Anecdote as AnecdoteDb
 
@@ -18,12 +20,28 @@ class AnecdoteService(
     private val rateRepository: RateRepository,
 ) {
     fun suggestAnecdote(sessionId: String): Anecdote {
-        val anecdote = anecdoteRepository.findOneUnrated(sessionId) ?: anecdoteRepository.save(
-            AnecdoteDb(id = UUID.randomUUID(), text = anecdoteGenerator.generate())
-        )
-        return Anecdote(anecdote.id!!, anecdote.text!!).also {
-            log.info { "Suggested anecdote: $it" }
+        val current = anecdoteRepository.findOneUnratedWithRating(sessionId)
+
+        if (current == null) {
+            val saved = anecdoteRepository.save(
+                AnecdoteDb(id = UUID.randomUUID(), text = anecdoteGenerator.generate())
+            )
+            return Anecdote(saved.id!!, saved.text!!, BigDecimal.ZERO, 0)
         }
+
+        val id = current.getId()
+        val sumByAnecdoteId = current.getRatingSum() ?: 0L
+        val ratingCount = current.getRatingCount() ?: 0
+        return Anecdote(
+            id = id,
+            text = current.getText(),
+            rating = if (sumByAnecdoteId == 0L) {
+                BigDecimal.ZERO
+            } else {
+                BigDecimal(sumByAnecdoteId).divide(BigDecimal(ratingCount), 2, RoundingMode.HALF_UP).stripTrailingZeros()
+            },
+            ratingCount = ratingCount,
+        )
     }
 
     @Transactional
@@ -42,4 +60,6 @@ class AnecdoteService(
 data class Anecdote(
     val id: UUID,
     val text: String,
+    val rating: BigDecimal,
+    val ratingCount: Int,
 )

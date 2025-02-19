@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import ru.nmedvedev.anekdoter.service.AnecdoteService
+import java.math.BigDecimal
 import java.util.UUID
 
 @ResponseBody
@@ -24,7 +25,7 @@ class AnecdoteController(
     @GetMapping("/anecdote", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getAnecdote(@RequestHeader(value = SESSION_ID_HEADER, required = true) sessionId: String): AnecdoteDto {
         return anecdoteService.suggestAnecdote(sessionId).let {
-            AnecdoteDto(it.id, it.text)
+            AnecdoteDto(it.id, it.text, it.rating, it.ratingCount)
         }
     }
 
@@ -40,6 +41,8 @@ const val SESSION_ID_HEADER = "X-Session-Id"
 data class AnecdoteDto(
     val id: UUID,
     val anecdote: String,
+    val rating: BigDecimal,
+    val ratingCount: Int,
 )
 
 data class RateAnecdoteRequest(

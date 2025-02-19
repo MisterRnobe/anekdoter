@@ -2,11 +2,13 @@ package ru.nmedvedev.anekdoter.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 import org.mockito.Mockito
 import org.mockito.Mockito.clearInvocations
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoInteractions
 import ru.nmedvedev.anekdoter.BaseTest
+import java.math.BigDecimal
 import java.util.UUID
 
 class AnecdoteServiceTest : BaseTest() {
@@ -57,5 +59,23 @@ class AnecdoteServiceTest : BaseTest() {
 
         assertEquals(last.text, result.text)
         verifyNoInteractions(anecdoteGenerator)
+    }
+
+    @Test
+    fun `should correctly calculate rating and count`() {
+        Mockito.doReturn(UUID.randomUUID().toString()).`when`(anecdoteGenerator).generate()
+        val anecdote = anecdoteService.suggestAnecdote(UUID.randomUUID().toString())
+        (1..10).forEach { i ->
+            anecdoteService.rate(UUID.randomUUID().toString(), anecdote.id, i)
+        }
+
+        val result = anecdoteService.suggestAnecdote(UUID.randomUUID().toString())
+
+        assertAll(
+            { assertEquals(anecdote.id, result.id) },
+            // (1+2+3..+10) / 10 = 55/10 = 5.5
+            { assertEquals(BigDecimal("5.5"), result.rating) },
+            { assertEquals(10, result.ratingCount) },
+        )
     }
 }

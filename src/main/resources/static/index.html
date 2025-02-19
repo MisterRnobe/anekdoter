@@ -6,14 +6,21 @@
     <title>Anekdoter</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
     <style>
-        body.light-theme {
+        /* Определяем базовые стили, которые можно переопределить через prefers-color-scheme */
+        body {
             background-color: #fff;
             color: #000;
+            transition: background-color 0.3s, color 0.3s;
         }
-
-        body.dark-theme {
-            background-color: #121212;
-            color: #fff;
+        /* Тёмная тема через media query */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #fff;
+            }
+            .anecdote-container {
+                border-color: #66b0ff;
+            }
         }
 
         .anecdote-container {
@@ -28,9 +35,21 @@
             margin-right: auto;
             background-color: inherit;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
+        }
+        /* Стили для информации о рейтинге */
+        #ratingInfo {
+            margin-top: 10px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+        }
+        #ratingInfo .star {
+            color: gold;
+            margin-right: 5px;
         }
 
         .rating-buttons {
@@ -49,6 +68,8 @@
     <div class="anecdote-container">
         <div id="loading" class="alert alert-info w-100 text-center" style="display:none;">Загружаю анекдот...</div>
         <div id="anecdote"></div>
+        <!-- Новый блок для отображения рейтинга -->
+        <div id="ratingInfo"></div>
     </div>
     <div id="ratingButtons" class="rating-buttons">
         <button class="btn btn-outline-primary">😠</button>
@@ -58,7 +79,6 @@
         <button class="btn btn-outline-primary">😂</button>
     </div>
 </div>
-
 <script src="script.js"></script>
 </body>
 </html>
