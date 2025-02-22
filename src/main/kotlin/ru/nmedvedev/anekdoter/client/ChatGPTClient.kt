@@ -1,38 +1,21 @@
 package ru.nmedvedev.anekdoter.client
 
-import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.exchange
-import java.net.URL
+import org.springframework.web.client.postForEntity
 
 @Component
 class ChatGPTClient(
+    @Qualifier("chatGPTRestTemplate")
     private val restTemplate: RestTemplate,
-    @Value("\${anekdoter.client.chatgpt.base-url}")
-    private val baseUrl: URL,
-    @Value("\${anekdoter.client.chatgpt.authorization}")
-    private val authorization: String,
 ) {
 
     fun request(prompt: String, model: ChatGPTModel = ChatGPTModel.GPT_4O): String? {
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_JSON
-        headers["Authorization"] = authorization
-
-        return restTemplate.exchange<ChatGPTResponse>(
-            url = "$baseUrl/v1/chat/completions",
-            method = HttpMethod.POST,
-            requestEntity = HttpEntity<ChatGPTRequest>(
-                ChatGPTRequest(model, listOf(ChatGPTRequestMessage("user", prompt)), false),
-                headers
-            ),
+        return restTemplate.postForEntity<ChatGPTResponse>(
+            url = "/v1/chat/completions",
+            request = ChatGPTRequest(model, listOf(ChatGPTRequestMessage("user", prompt)), false),
         ).body?.choices?.firstOrNull()?.message?.content
     }
 }

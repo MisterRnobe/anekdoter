@@ -60,15 +60,59 @@
             margin-left: auto;
             margin-right: auto;
         }
+
+        .tag-selector {
+            max-width: 600px;
+            margin: 0 auto 20px auto;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
+            justify-content: center;
+        }
+
+        .tag {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+
+        .tag-select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #007bff;
+        }
+
+        .tag-select option {
+            padding: 8px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .tag {
+                background-color: #66b0ff;
+            }
+        }
+
     </style>
 </head>
 <body>
 <div class="container mt-5">
     <h1 class="text-center mb-4">Анекдоты дня</h1>
+    <div class="tag-selector">
+        <select multiple class="tag-select" id="tagSelect" size="5"></select>
+    </div>
+
     <div class="anecdote-container">
         <div id="loading" class="alert alert-info w-100 text-center" style="display:none;">Загружаю анекдот...</div>
         <div id="anecdote"></div>
-        <!-- Новый блок для отображения рейтинга -->
+        <div class="tags-container" id="tags"></div>
         <div id="ratingInfo"></div>
     </div>
     <div id="ratingButtons" class="rating-buttons">

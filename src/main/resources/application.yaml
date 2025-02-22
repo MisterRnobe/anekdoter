@@ -19,3 +19,15 @@ anekdoter:
     chatgpt:
       base-url: https://api.deepseek.com
       authorization: Bearer 1234
+  tags:
+    initial:
+      - вовочка
+      - программисты
+      - чапаев
+      - жадность людей
+      - лихие 90-е
+      - политика
+      - новый год
+      - бездельничать на работе
+      - уклонение от налогов
+      - гопники

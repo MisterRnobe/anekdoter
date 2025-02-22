@@ -1,36 +1,20 @@
 package ru.nmedvedev.anekdoter.client
 
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.exchange
-import org.springframework.http.MediaType
-import java.net.URL
+import org.springframework.web.client.postForEntity
 
 @Component
 class DeepSeekClient(
+    @Qualifier("deepSeekRestTemplate")
     private val restTemplate: RestTemplate,
-    @Value("\${anekdoter.client.deepseek.base-url}")
-    private val baseUrl: URL,
-    @Value("\${anekdoter.client.deepseek.authorization}")
-    private val authorization: String,
 ) {
 
     fun request(prompt: String): String? {
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_JSON
-        headers["Authorization"] = authorization
-
-        restTemplate.exchange<Map<String, Any>>(
-            url = "$baseUrl/chat/completions",
-            method = HttpMethod.POST,
-            requestEntity = HttpEntity<DeepSeekRequest>(
-                DeepSeekRequest("deepseek-chat", listOf(DeepSeekRequestMessage("user", prompt)), false),
-                headers
-            ),
+        restTemplate.postForEntity<Map<String, Any>>(
+            url = "/chat/completions",
+            request = DeepSeekRequest("deepseek-chat", listOf(DeepSeekRequestMessage("user", prompt)), false),
         )
         return null
     }
