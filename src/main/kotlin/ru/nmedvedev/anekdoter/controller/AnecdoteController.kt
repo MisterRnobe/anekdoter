@@ -28,7 +28,7 @@ class AnecdoteController(
     @GetMapping("/anecdote", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getAnecdote(@RequestHeader(value = SESSION_ID_HEADER, required = true) sessionId: String, @RequestParam(value = "tag_id", required = false) tagIds: List<UUID>?): AnecdoteDto {
         return anecdoteService.suggestAnecdote(sessionId, tagIds).let {
-            AnecdoteDto(it.id, it.text, it.rating, it.ratingCount, it.tags.map { TagResponse(it.id, it.name) })
+            AnecdoteDto(it.id, it.text, it.rating, it.ratingCount, it.tags.map { TagResponse(it.id, it.name) } + TagResponse(UUID.nameUUIDFromBytes(it.author.toByteArray()), it.author))
         }
     }
 

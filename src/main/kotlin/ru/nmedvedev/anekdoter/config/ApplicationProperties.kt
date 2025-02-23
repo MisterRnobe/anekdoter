@@ -5,17 +5,17 @@ import java.net.URI
 
 @ConfigurationProperties(prefix = "anekdoter")
 data class ApplicationProperties(
-    val client: Clients,
+    val chatbots: Map<String, ChatBotProperties>,
     val tags: TagsProperties,
 )
 
-data class Clients(
-    val deepseek: ClientProperties,
-    val chatgpt: ClientProperties,
+data class ChatBotProperties(
+    val url: URI,
+    val authorization: String,
+    val models: List<String>,
+    val defaultModel: String,
+    val requestMask: String,
+    val responseTextJsonPath: String,
 )
 
-data class ClientProperties(
-    val baseUrl: URI,
-    val authorization: String,
-)
 data class TagsProperties(val initial: List<String>)

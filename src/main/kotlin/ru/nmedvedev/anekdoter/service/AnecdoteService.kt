@@ -1,5 +1,6 @@
 package ru.nmedvedev.anekdoter.service
 
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import ru.nmedvedev.anekdoter.model.Rate
@@ -7,6 +8,7 @@ import ru.nmedvedev.anekdoter.model.Tag
 import ru.nmedvedev.anekdoter.repository.AnecdoteRepository
 import ru.nmedvedev.anekdoter.repository.RateRepository
 import ru.nmedvedev.anekdoter.repository.TagRepository
+import ru.nmedvedev.anekdoter.service.event.AnecdoteCreatedEvent
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.UUID
@@ -18,6 +20,7 @@ class AnecdoteService(
     private val anecdoteRepository: AnecdoteRepository,
     private val tagRepository: TagRepository,
     private val rateRepository: RateRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
     fun suggestAnecdote(sessionId: String, tagIds: List<UUID>?): Anecdote {
         val current = if (tagIds == null || tagIds.isEmpty()) {
@@ -42,8 +45,9 @@ class AnecdoteService(
                     tags = tags,
                 )
             )
+            applicationEventPublisher.publishEvent(AnecdoteCreatedEvent(saved))
 
-            return Anecdote(saved.id!!, saved.text!!, BigDecimal.ZERO, 0, tags.toAnecdoteTags())
+            return Anecdote(saved.id!!, saved.text!!, BigDecimal.ZERO, 0, tags.toAnecdoteTags(), generated.model)
         }
 
         // val id = current.getId()
@@ -65,6 +69,7 @@ class AnecdoteService(
             },
             ratingCount = ratingCount,
             tags = current.tags!!.toAnecdoteTags(),
+            author = current.createdBy!!,
         )
     }
 
@@ -85,7 +90,8 @@ data class Anecdote(
     val text: String,
     val rating: BigDecimal,
     val ratingCount: Int,
-    val tags: List<AnecdoteTag>
+    val tags: List<AnecdoteTag>,
+    val author: String,
 )
 
 data class AnecdoteTag(

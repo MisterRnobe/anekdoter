@@ -12,13 +12,37 @@ logging:
     org.zalando.logbook.Logbook: TRACE
 
 anekdoter:
-  client:
+  chatbots:
     deepseek:
-      base-url: https://api.deepseek.com
-      authorization: Bearer 1234
+      url: https://api.deepseek.com/v1/chat/completions
+      authorization: Bearer 123
+      models:
+        - deepseek-ai/DeepSeek-V3
+      default-model: ${anekdoter.chatbots.deepseek.models[0]}
+      request-mask: |-
+        {"model":"${model}","stream":false,"messages":[{"role":"user","content":"${prompt}"}]}
+      response-text-json-path: /choices/0/message/content
     chatgpt:
-      base-url: https://api.deepseek.com
-      authorization: Bearer 1234
+      url: https://api.deepseek.com/v1/chat/completions
+      authorization: Bearer 123
+      models:
+        - gpt-4o
+      default-model: ${anekdoter.chatbots.chatgpt.models[0]}
+      request-mask: |-
+        {"model":"${model}","stream":false,"messages":[{"role":"user","content":"${prompt}"}]}
+      response-text-json-path: /choices/0/message/content
+    claude:
+      url: https://api.anthropic.com/v1/messages
+      authorization: Bearer 123
+      models:
+        - claude-3-5-sonnet-20241022
+      default-model: ${anekdoter.chatbots.claude.models[0]}
+      request-mask: |-
+        {"model":"${model}","max_tokens":8192,"messages":[{"role":"user","content":"${prompt}"}]}
+      response-text-json-path: /content/0/text
+  background:
+    generation:
+      enabled: true
   tags:
     initial:
       - вовочка
