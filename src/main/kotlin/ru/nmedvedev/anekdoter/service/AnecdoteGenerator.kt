@@ -14,7 +14,7 @@ class AnecdoteGenerator(
     applicationProperties: ApplicationProperties,
 ) {
 
-    private val models = applicationProperties.chatbots.values.map { it.defaultModel }
+    private val models = applicationProperties.chatbots.values.flatMap { it.models }
 
     fun generateFor(sessionId: String, tags: List<String>): AnecdoteMeta {
         val model = models.random()
@@ -23,7 +23,7 @@ class AnecdoteGenerator(
         val request = chatBotClient.requestWithModel(
             BASE_PROMPT.format(tags.joinToString("\n") { tag -> "* $tag" }),
             model
-        ).orTimeout(30, TimeUnit.SECONDS).join() ?: TODO()
+        ).orTimeout(1, TimeUnit.MINUTES).join() ?: TODO()
 
         return AnecdoteMeta(request, model)
     }
@@ -35,5 +35,5 @@ data class AnecdoteMeta(
 )
 
 private const val BASE_PROMPT =
-    "Придумай мне такой смешной анекдот с панчлайном, который бы включал в себя следующие темы:\n%s\nСделай сюжет в нем таким, чтобы он не был вычурным и рваным, чтобы все темы выглядили гармонично, для этого можешь сгладить чутка упомянутые мной темы. В ответ верни только его текст"
+    "Придумай мне анекдот с панчлайном, как в классическом русском стиле, который бы включал в себя следующие темы:\n%s\nСделай сюжет в нем таким, чтобы он не был вычурным и рваным, чтобы все темы выглядили гармонично, для этого можешь сгладить чутка упомянутые мной темы. В ответ верни только его текст"
 // private const val BASE_PROMPT = "Придумай мне такую шутку, которая бы включала в себя следующие темы:\n%s\n. Сделай шутку такой, чтобы она не был вычурной и рваной, чтобы все темы гармонично ложились в штуку, для этого можешь сгладить чутка упомянутые мной темы. В ответ верни только его текст"

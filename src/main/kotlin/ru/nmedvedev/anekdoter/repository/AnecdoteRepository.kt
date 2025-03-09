@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import ru.nmedvedev.anekdoter.model.Anecdote
 import ru.nmedvedev.anekdoter.model.AnecdoteWithRating
+import java.time.Instant
 import java.util.UUID
 
 interface AnecdoteRepository: JpaRepository<Anecdote, UUID> {
@@ -45,5 +46,10 @@ interface AnecdoteRepository: JpaRepository<Anecdote, UUID> {
         SELECT r.anecdote.id, sum(r.rate) as ratingSum, count(r.anecdote.id) as ratingCount FROM Rate r GROUP BY r.anecdote.id HAVING r.anecdote.id = :id
     """)
     fun rateAnecdote(id: UUID): AnecdoteWithRating?
+
+    @Query("""
+        SELECT r.anecdote FROM Rate r GROUP BY r.anecdote HAVING r.anecdote.createdAt > :createdDate ORDER BY AVG(r.rate) DESC LIMIT 1
+    """)
+    fun findTopRatedFrom(createdDate: Instant): Anecdote?
 
 }

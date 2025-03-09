@@ -7,11 +7,12 @@ import java.net.URI
 data class ApplicationProperties(
     val chatbots: Map<String, ChatBotProperties>,
     val tags: TagsProperties,
+    val telegram: TelegramProperties,
 )
 
 data class ChatBotProperties(
     val url: URI,
-    val authorization: String,
+    val headers: Map<String, String>,
     val models: List<String>,
     val defaultModel: String,
     val requestMask: String,
@@ -19,3 +20,9 @@ data class ChatBotProperties(
 )
 
 data class TagsProperties(val initial: List<String>)
+
+data class TelegramProperties(
+    val baseUrl: URI,
+    val botToken: String,
+    val chatId: String,
+)

@@ -1,5 +1,6 @@
 package ru.nmedvedev.anekdoter.service
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -21,7 +22,10 @@ class AnecdoteService(
     private val tagRepository: TagRepository,
     private val rateRepository: RateRepository,
     private val applicationEventPublisher: ApplicationEventPublisher,
+    @Value("\${anekdoter.default-tags-count}")
+    private val defaultTagsCount: Int,
 ) {
+    @Transactional
     fun suggestAnecdote(sessionId: String, tagIds: List<UUID>?): Anecdote {
         val current = if (tagIds == null || tagIds.isEmpty()) {
             anecdoteRepository.findOneUnrated(sessionId)
@@ -31,7 +35,7 @@ class AnecdoteService(
 
         if (current == null) {
             val tags = if (tagIds == null || tagIds.isEmpty()) {
-                tagRepository.findAny(4)
+                tagRepository.findAny(defaultTagsCount)
             } else {
                 tagRepository.findAllById(tagIds)
             }
@@ -39,7 +43,6 @@ class AnecdoteService(
             val generated = anecdoteGenerator.generateFor(sessionId, tags.map { it.name!! })
             val saved = anecdoteRepository.save(
                 AnecdoteDb(
-                    id = UUID.randomUUID(),
                     text = generated.text,
                     createdBy = generated.model,
                     tags = tags,

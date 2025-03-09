@@ -1,7 +1,6 @@
 package ru.nmedvedev.anekdoter.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import jakarta.annotation.PostConstruct
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -9,8 +8,6 @@ import org.springframework.core.task.AsyncTaskExecutor
 import org.springframework.stereotype.Component
 import ru.nmedvedev.anekdoter.repository.TagRepository
 import ru.nmedvedev.anekdoter.service.event.AnecdoteCreatedEvent
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutorService
 
 private const val FAKE_SESSION_ID = "fake_session"
 
@@ -32,14 +29,19 @@ class BackgroundGenerator(
     @EventListener(ApplicationReadyEvent::class)
     fun onApplicationReady(event: ApplicationReadyEvent) {
         asyncTaskExecutor.submit {
-            try {
-                var hasTags = false
-                while (!hasTags) {
-                    hasTags = tagRepository.count() > 0
+            logger.info { "Starting background generation" }
+            var success = false
+            while (!success) {
+                try {
+                    var hasTags = false
+                    while (!hasTags) {
+                        hasTags = tagRepository.count() > 0
+                    }
+                    anecdoteService.suggestAnecdote(FAKE_SESSION_ID, null)
+                    success = true
+                } catch (e: Exception) {
+                    logger.error(e) { "Failed to generate anecdote" }
                 }
-                anecdoteService.suggestAnecdote(FAKE_SESSION_ID, null)
-            } catch (e: Exception) {
-                logger.error(e) { "Failed to generate anecdote" }
             }
         }
     }

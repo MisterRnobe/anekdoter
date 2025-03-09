@@ -42,7 +42,7 @@ class ChatBotClient(
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         headers.accept = listOf(MediaType.APPLICATION_JSON)
-        headers.set(HttpHeaders.AUTHORIZATION, bot.authorization)
+        bot.headers.forEach { (key, value) -> headers.add(key, value) }
 
         return CompletableFuture.supplyAsync({
             rateLimiter.acquire()
@@ -54,11 +54,11 @@ class ChatBotClient(
             )
             resp.body?.at(bot.responseTextJsonPath)?.asText()?.takeIf { it.isNotBlank() }
         }, asyncTaskExecutor)
-            .orTimeout(30, TimeUnit.SECONDS)
-            .exceptionally { e ->
-                logger.error(e) { "Failed to request $model" }
-                throw e
-            }
+            // .orTimeout(30, TimeUnit.SECONDS)
+            // .exceptionally { e ->
+            //     logger.error(e) { "Failed to request $model" }
+            //     throw e
+            // }
     }
 
     fun requestWithChatBot(prompt: String, chatbot: String): CompletableFuture<String?> =

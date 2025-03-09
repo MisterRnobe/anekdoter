@@ -15,7 +15,9 @@ class TagInitializer(
     private val tagRepository: TagRepository,
 ) : CommandLineRunner {
     override fun run(vararg args: String?) {
-        val tagNames = applicationProperties.tags.initial.distinct()
+        val existing = tagRepository.findAll().map { it.name!! }.toSet()
+        val tagNames = applicationProperties.tags.initial.distinct().filter { !existing.contains(it) }
+
         logger.info { "tags to save $tagNames" }
         tagRepository.saveAll(tagNames.map { Tag(name = it) })
         logger.info { "Saved tags $tagNames" }

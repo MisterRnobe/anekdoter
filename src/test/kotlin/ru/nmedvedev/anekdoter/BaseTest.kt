@@ -1,5 +1,6 @@
 package ru.nmedvedev.anekdoter
 
+import jakarta.persistence.EntityManager
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,7 +16,15 @@ import ru.nmedvedev.anekdoter.service.AnecdoteService
 import java.util.UUID
 
 @Import(TestcontainersConfiguration::class)
-@SpringBootTest
+@SpringBootTest(
+    properties = [
+        "anekdoter.background.generation.enabled=false",
+        "anekdoter.background.chatbots-rater.enabled=false",
+        "anekdoter.background.telegram-poster.enabled=false",
+        "spring.jpa.properties.hibernate.format_sql=true",
+        "spring.jpa.show-sql=true",
+    ]
+)
 abstract class BaseTest {
 
     @Autowired

@@ -12,10 +12,12 @@ logging:
     org.zalando.logbook.Logbook: TRACE
 
 anekdoter:
+  default-tags-count: 3
   chatbots:
     deepseek:
       url: https://api.deepseek.com/v1/chat/completions
-      authorization: Bearer 123
+      headers:
+        Authorization: Bearer ${DEEPSEEK_API_TOKEN}
       models:
         - deepseek-ai/DeepSeek-V3
       default-model: ${anekdoter.chatbots.deepseek.models[0]}
@@ -24,7 +26,8 @@ anekdoter:
       response-text-json-path: /choices/0/message/content
     chatgpt:
       url: https://api.deepseek.com/v1/chat/completions
-      authorization: Bearer 123
+      headers:
+        Authorization: Bearer ${CHATGPT_API_TOKEN}
       models:
         - gpt-4o
       default-model: ${anekdoter.chatbots.chatgpt.models[0]}
@@ -33,8 +36,10 @@ anekdoter:
       response-text-json-path: /choices/0/message/content
     claude:
       url: https://api.anthropic.com/v1/messages
-      authorization: Bearer 123
+      headers:
+        Authorization: Bearer ${CLAUDE_API_TOKEN}
       models:
+        - claude-3-7-sonnet-20250219
         - claude-3-5-sonnet-20241022
       default-model: ${anekdoter.chatbots.claude.models[0]}
       request-mask: |-
@@ -43,6 +48,14 @@ anekdoter:
   background:
     generation:
       enabled: true
+    chatbots-rater:
+      enabled: true
+    telegram-poster:
+      enabled: true
+  telegram:
+    base-url: https://api.telegram.org/bot
+    bot-token: ${TELEGRAM_BOT_TOKEN}
+    chat-id: ${TELEGRAM_CHAT_ID}
   tags:
     initial:
       - вовочка
